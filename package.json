@@ -13,9 +13,11 @@
     "includedScripts": []
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.21.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "recharts": "^3.4.1",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
