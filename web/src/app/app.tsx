@@ -25,6 +25,21 @@ type RacePrediction = {
 };
 
 function App() {
+
+  function formatRaceTime(seconds: number): string {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+
+  if (h > 0) {
+    return `${h}:${m.toString().padStart(2, '0')}:${s
+      .toString()
+      .padStart(2, '0')}`;
+  }
+
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
   const [data, setData] = useState<Vo2Point[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -45,7 +60,9 @@ async function fetchRacePrediction() {
   }
 
   try {
-    const res = await fetch(`http://localhost:3333/api/race-prediction?vo2max=${vo2}`);
+    const res = await fetch(
+  `http://localhost:3333/api/vo2max/race-prediction?vo2max=${vo2}`
+);
     if (!res.ok) {
       throw new Error(`HTTP ${res.status}`);
     }
@@ -121,13 +138,20 @@ async function fetchRacePrediction() {
   <div>
     <p>Verwendete VO₂max: {racePrediction.vo2max}</p>
     <ul>
-      <li>5K: {racePrediction.prediction['5K']}</li>
-      <li>10K: {racePrediction.prediction['10K']}</li>
-      <li>Halbmarathon: {racePrediction.prediction['Half Marathon']}</li>
-      <li>Marathon: {racePrediction.prediction['Marathon']}</li>
+      <li>5K: {formatRaceTime(racePrediction.prediction['5K'])}</li>
+      <li>10K: {formatRaceTime(racePrediction.prediction['10K'])}</li>
+      <li>
+        Halbmarathon:{' '}
+        {formatRaceTime(racePrediction.prediction['Half Marathon'])}
+      </li>
+      <li>
+        Marathon:{' '}
+        {formatRaceTime(racePrediction.prediction['Marathon'])}
+      </li>
     </ul>
   </div>
 )}
+
 
 
       <h3>Raw data</h3>
