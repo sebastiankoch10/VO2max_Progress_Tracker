@@ -79,7 +79,7 @@ async function fetchRacePrediction() {
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch('http://localhost:3333/api/vo2max/trend');
+        const res = await fetch('http://localhost:3333/api/vo2max');
         if (!res.ok) {
           throw new Error(`HTTP ${res.status}`);
         }

@@ -5,9 +5,10 @@
 
 import express from 'express';
 import * as path from 'path';
-import { mockVo2maxTrend } from './data/vo2max-trend.mock'; 
+import { getVo2SeriesFromFile } from './vo2max-from-activities';
 import { mockRacePrediction } from './data/race-prediction.mock';
 import cors from 'cors';
+import { get } from 'http';
 
 
 
@@ -20,10 +21,17 @@ app.get('/api', (req, res) => {
   res.send({ message: 'Welcome to api!' });
 });
 
-//Route: Vo2max Verlauf
-app.get('/api/vo2max/trend', (req, res) => {
-  res.json(mockVo2maxTrend);
+//Route: Vo2max Serie 
+app.get('/api/vo2max', (req, res) => {
+  try {
+    const series = getVo2SeriesFromFile();
+    res.json(series);
+  } catch (err) {
+    console.error('Error loading VO2 series', err);
+    res.status(500).json({ error: 'Failed to load VO2 series' });
+  }
 });
+
 
 //Route: Race Prediction
 app.get('/api/vo2max/race-prediction', (req, res) => {
