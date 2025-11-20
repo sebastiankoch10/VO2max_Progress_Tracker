@@ -98,72 +98,153 @@ async function fetchRacePrediction() {
   if (loading) return <p>Loading VO₂max trend…</p>;
   if (error) return <p>Error: {error}</p>;
 
-  return (
-    <div style={{ padding: '1rem', fontFamily: 'sans-serif', maxWidth: 800, margin: '0 auto' }}>
-      <h1>VO₂max Progress Tracker</h1>
+  const chartWidth = Math.max(data.length * 35, 500);
 
+
+
+
+  
+  
+
+  return (
+    <div
+      style={{
+        padding: "1rem",
+        fontFamily: "sans-serif",
+        maxWidth: 1000,
+        margin: "0 auto",
+      }}
+    >
+      <h1>VO₂max Progress Tracker</h1>
       <h2>VO₂max Trend</h2>
-      <div style={{ width: '100%', height: 300 }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data}>
+
+      {/* Chart */}
+      <div
+        style={{
+          width: "100%",
+          overflowX: "auto",
+          border: "1px solid #eee",
+          marginBottom: "1rem",
+        }}
+      >
+        <div style={{ width: chartWidth, height: 320 }}>
+          <LineChart
+            width={chartWidth}
+            height={320}
+            data={data}
+            margin={{ top: 20, right: 30, left: 50, bottom: 60 }}
+          >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" />
-            <YAxis />
+            <XAxis
+              dataKey="date"
+              tickFormatter={(d) => (typeof d === "string" ? d.slice(5) : d)}
+              angle={-45}
+              textAnchor="end"
+              height={50}
+            />
+            <YAxis domain={["dataMin - 1", "dataMax + 1"]} />
             <Tooltip />
-            <Line type="monotone" dataKey="vo2max" />
+            <Line
+              type="monotone"
+              dataKey="vo2max"
+              dot={{ r: 3 }}
+              stroke="#0074D9"
+              strokeWidth={2}
+            />
           </LineChart>
-        </ResponsiveContainer>
+        </div>
       </div>
 
-      <h2>Race Prediction</h2>
-<div style={{ marginBottom: '1rem' }}>
-  <label>
-    VO₂max:&nbsp;
-    <input
-      type="number"
-      value={vo2Input}
-      onChange={(e) => setVo2Input(e.target.value)}
-      style={{ width: '80px' }}
-    />
-  </label>
-  <button onClick={fetchRacePrediction} style={{ marginLeft: '0.5rem' }}>
-    Berechnen
-  </button>
-</div>
+      {/* Grid: links Race Prediction, rechts Raw Data */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: "1rem",
+          marginTop: "1rem",
+        }}
+      >
+        {/* Left: Race Prediction */}
+        <div
+          style={{
+            border: "1px solid #ddd",
+            borderRadius: 8,
+            padding: "1rem",
+            minHeight: 250,
+            boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+          }}
+        >
+          <h2>Race Prediction</h2>
+          <div style={{ marginBottom: "1rem" }}>
+            <label>
+              VO₂max:&nbsp;
+              <input
+                type="number"
+                value={vo2Input}
+                onChange={(e) => setVo2Input(e.target.value)}
+                style={{ width: "80px" }}
+              />
+            </label>
+            <button
+              onClick={fetchRacePrediction}
+              style={{ marginLeft: "0.5rem" }}
+            >
+              Berechnen
+            </button>
+          </div>
 
-{raceLoading && <p>Berechne Prognose…</p>}
-{raceError && <p style={{ color: 'red' }}>Error: {raceError}</p>}
+          {raceLoading && <p>Berechne Prognose…</p>}
+          {raceError && <p style={{ color: "red" }}>Error: {raceError}</p>}
 
-{racePrediction && (
-  <div>
-    <p>Verwendete VO₂max: {racePrediction.vo2max}</p>
-    <ul>
-      <li>5K: {formatRaceTime(racePrediction.prediction['5K'])}</li>
-      <li>10K: {formatRaceTime(racePrediction.prediction['10K'])}</li>
-      <li>
-        Halbmarathon:{' '}
-        {formatRaceTime(racePrediction.prediction['Half Marathon'])}
-      </li>
-      <li>
-        Marathon:{' '}
-        {formatRaceTime(racePrediction.prediction['Marathon'])}
-      </li>
-    </ul>
-  </div>
-)}
+          {racePrediction && (
+            <div>
+              <p>Verwendete VO₂max: {racePrediction.vo2max}</p>
+              <ul>
+                <li>5K: {formatRaceTime(racePrediction.prediction["5K"])}</li>
+                <li>10K: {formatRaceTime(racePrediction.prediction["10K"])}</li>
+                <li>
+                  Halbmarathon:{" "}
+                  {formatRaceTime(
+                    racePrediction.prediction["Half Marathon"]
+                  )}
+                </li>
+                <li>
+                  Marathon:{" "}
+                  {formatRaceTime(
+                    racePrediction.prediction["Marathon"]
+                  )}
+                </li>
+              </ul>
+            </div>
+          )}
+        </div>
 
-
-
-      <h3>Raw data</h3>
-      <ul>
-        {data.map((point) => (
-          <li key={point.date}>
-            {point.date}: {point.vo2max}
-          </li>
-        ))}
-      </ul>
+        {/* Right: Raw Data */}
+        <div
+          style={{
+            border: "1px solid #ddd",
+            borderRadius: 8,
+            padding: "1rem",
+            minHeight: 250,
+            maxHeight: 250,
+            overflowY: "auto",
+            boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+          }}
+        >
+          <h2>Raw Data</h2>
+          <ul style={{ margin: 0, paddingLeft: "1.2rem" }}>
+            {data.map((point) => (
+              <li key={point.date}>
+                {point.date}: {point.vo2max}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
     </div>
   );
 }
+
+
 
 export default App;
